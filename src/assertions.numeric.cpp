@@ -71,15 +71,15 @@ namespace {
         };
     };
 }
-const f5::json::assertion::checker f5::json::assertion::exclusive_maximum_checker
-        = bounds_checker("exclusiveMaximum", [](auto m, auto v) { return v < m; });
-const f5::json::assertion::checker f5::json::assertion::exclusive_minimum_checker
-        = bounds_checker("exclusiveMinimum", [](auto m, auto v) { return v > m; });
-const f5::json::assertion::checker f5::json::assertion::maximum_checker
-        = bounds_checker("maximum", [](auto m, auto v) { return v <= m; });
-const f5::json::assertion::checker f5::json::assertion::minimum_checker
-        = bounds_checker("minimum", [](auto m, auto v) { return v >= m; });
-const f5::json::assertion::checker f5::json::assertion::multiple_of_checker
-        = bounds_checker("multipleOf", [](auto m, auto v) {
-              return std::abs(std::remainder(v, m)) < epsilon;
-          });
+const f5::json::assertion::checker f5::json::assertion::exclusive_maximum_checker =
+        bounds_checker("exclusiveMaximum", [](auto m, auto v) { return v < m; });
+const f5::json::assertion::checker f5::json::assertion::exclusive_minimum_checker =
+        bounds_checker("exclusiveMinimum", [](auto m, auto v) { return v > m; });
+const f5::json::assertion::checker f5::json::assertion::maximum_checker =
+        bounds_checker("maximum", [](auto m, auto v) { return v <= m; });
+const f5::json::assertion::checker f5::json::assertion::minimum_checker =
+        bounds_checker("minimum", [](auto m, auto v) { return v >= m; });
+const f5::json::assertion::checker f5::json::assertion::multiple_of_checker =
+        bounds_checker("multipleOf", [](auto m, auto v) {
+            return std::abs(std::remainder(v, m)) < epsilon;
+        });

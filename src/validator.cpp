@@ -16,8 +16,8 @@ namespace {
 
     const auto g_assertions = []() {
         std::map<f5::u8view, f5::json::assertion::checker> a;
-        a["additionalProperties"]
-                = f5::json::assertion::additional_properties_checker;
+        a["additionalProperties"] =
+                f5::json::assertion::additional_properties_checker;
         a["allOf"] = f5::json::assertion::all_of_checker;
         a["anyOf"] = f5::json::assertion::any_of_checker;
         a["const"] = f5::json::assertion::const_checker;

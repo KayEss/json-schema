@@ -25,8 +25,8 @@ namespace f5 {
         /// takes a schema name and a configuration. A given loader may
         /// be used multiple times by a user each time with different
         /// configurations.
-        using schema_loader_fn
-                = std::function<std::unique_ptr<schema>(u8view, value)>;
+        using schema_loader_fn =
+                std::function<std::unique_ptr<schema>(u8view, value)>;
 
 
         struct schema_loader {

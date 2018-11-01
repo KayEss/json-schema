@@ -34,10 +34,10 @@ namespace {
                     f5::json::value::object_t github;
                     github["loader"] = "http";
                     github["prefix"] = "http://localhost:1234/";
-                    github["base"]
-                            = "https://raw.githubusercontent.com/"
-                              "json-schema-org/JSON-Schema-Test-Suite/master/"
-                              "remotes/";
+                    github["base"] =
+                            "https://raw.githubusercontent.com/"
+                            "json-schema-org/JSON-Schema-Test-Suite/master/"
+                            "remotes/";
                     return github;
                 }());
                 return loaders;
@@ -64,8 +64,8 @@ FSL_MAIN("json-schema-testsuite", "JSON Schema Test Suite Runner")
             const auto response = ua.get(loc);
             const auto tests = fostlib::json::parse(response->body()->data());
             for (const auto test : tests) {
-                const auto description
-                        = fostlib::coerce<f5::u8view>(test["description"]);
+                const auto description =
+                        fostlib::coerce<f5::u8view>(test["description"]);
                 const f5::json::schema s{loc, test["schema"]};
                 for (const auto example : test["tests"]) {
                     ss << description << ':'

@@ -74,8 +74,8 @@ namespace {
             [](f5::u8view url,
                f5::json::value config) -> std::unique_ptr<f5::json::schema> {
                 if (config.has_key("prefix")) {
-                    const auto prefix
-                            = fostlib::coerce<f5::u8view>(config["prefix"]);
+                    const auto prefix =
+                            fostlib::coerce<f5::u8view>(config["prefix"]);
                     if (url.starts_with(prefix)) {
                         if (config.has_key("base")) {
                             fostlib::url base{fostlib::coerce<f5::u8view>(

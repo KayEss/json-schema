@@ -8,59 +8,59 @@
 #include <f5/json/assertions.hpp>
 
 
-const f5::json::assertion::checker f5::json::assertion::contains_checker
-        = [](f5::u8view rule,
-             f5::json::value part,
-             f5::json::validation::annotations an) {
-              const auto array = an.data[an.dpos];
-              if (array.isarray()) {
-                  for (std::size_t index{}; index < array.size(); ++index) {
-                      const auto valid = validation::first_error(
-                              an, an.spos / rule, an.dpos / index);
-                      if (valid) return validation::result{std::move(an)};
-                  }
-                  return validation::result{rule, an.spos / rule, an.dpos};
-              }
-              return validation::result{std::move(an)};
-          };
+const f5::json::assertion::checker f5::json::assertion::contains_checker =
+        [](f5::u8view rule,
+           f5::json::value part,
+           f5::json::validation::annotations an) {
+            const auto array = an.data[an.dpos];
+            if (array.isarray()) {
+                for (std::size_t index{}; index < array.size(); ++index) {
+                    const auto valid = validation::first_error(
+                            an, an.spos / rule, an.dpos / index);
+                    if (valid) return validation::result{std::move(an)};
+                }
+                return validation::result{rule, an.spos / rule, an.dpos};
+            }
+            return validation::result{std::move(an)};
+        };
 
 
-const f5::json::assertion::checker f5::json::assertion::items_checker
-        = [](f5::u8view rule,
-             f5::json::value part,
-             f5::json::validation::annotations an) {
-              const auto array = an.data[an.dpos];
-              if (array.isarray()) {
-                  if (part.isarray()) {
-                      const auto psize = part.size(), dsize = array.size();
-                      for (std::size_t index{}; index < std::min(psize, dsize);
-                           ++index) {
-                          auto valid = validation::first_error(
-                                  an, an.spos / rule / index, an.dpos / index);
-                          if (not valid) return valid;
-                          an.merge(std::move(valid));
-                      }
-                      if (an.sroot[an.spos].has_key("additionalItems")) {
-                          for (std::size_t index{std::min(psize, dsize)};
-                               index < dsize; ++index) {
-                              auto valid = validation::first_error(
-                                      an, an.spos / "additionalItems",
-                                      an.dpos / index);
-                              if (not valid) return valid;
-                              an.merge(std::move(valid));
-                          }
-                      }
-                  } else {
-                      for (std::size_t index{}; index < array.size(); ++index) {
-                          auto valid = validation::first_error(
-                                  an, an.spos / rule, an.dpos / index);
-                          if (not valid) return valid;
-                          an.merge(std::move(valid));
-                      }
-                  }
-              }
-              return validation::result{std::move(an)};
-          };
+const f5::json::assertion::checker f5::json::assertion::items_checker =
+        [](f5::u8view rule,
+           f5::json::value part,
+           f5::json::validation::annotations an) {
+            const auto array = an.data[an.dpos];
+            if (array.isarray()) {
+                if (part.isarray()) {
+                    const auto psize = part.size(), dsize = array.size();
+                    for (std::size_t index{}; index < std::min(psize, dsize);
+                         ++index) {
+                        auto valid = validation::first_error(
+                                an, an.spos / rule / index, an.dpos / index);
+                        if (not valid) return valid;
+                        an.merge(std::move(valid));
+                    }
+                    if (an.sroot[an.spos].has_key("additionalItems")) {
+                        for (std::size_t index{std::min(psize, dsize)};
+                             index < dsize; ++index) {
+                            auto valid = validation::first_error(
+                                    an, an.spos / "additionalItems",
+                                    an.dpos / index);
+                            if (not valid) return valid;
+                            an.merge(std::move(valid));
+                        }
+                    }
+                } else {
+                    for (std::size_t index{}; index < array.size(); ++index) {
+                        auto valid = validation::first_error(
+                                an, an.spos / rule, an.dpos / index);
+                        if (not valid) return valid;
+                        an.merge(std::move(valid));
+                    }
+                }
+            }
+            return validation::result{std::move(an)};
+        };
 
 
 const f5::json::assertion::checker f5::json::assertion::max_items_checker = [](f5::u8view rule,
