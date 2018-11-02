@@ -13,10 +13,14 @@
 
 
 namespace {
-    const fostlib::setting<bool>
-            c_verbose(__FILE__, "json-schema-validator", "Verbose", false, true);
+    const fostlib::setting<bool> c_verbose(
+            __FILE__, "json-schema-validator", "Verbose", false, true);
     const fostlib::setting<bool> c_check_invalid(
-            __FILE__, "json-schema-validator", "Success when invalid", false, true);
+            __FILE__,
+            "json-schema-validator",
+            "Success when invalid",
+            false,
+            true);
 
     const fostlib::setting<fostlib::string> c_schema(
             __FILE__,

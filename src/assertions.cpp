@@ -53,16 +53,17 @@ const f5::json::assertion::checker f5::json::assertion::always =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::const_checker = [](f5::u8view rule,
-                                                                           f5::json::value part,
-                                                                           f5::json::validation::annotations
-                                                                                   an) {
-    if (an.data[an.dpos] == part) {
-        return validation::result{std::move(an)};
-    } else {
-        return validation::result{rule, an.spos / rule, std::move(an.dpos)};
-    }
-};
+const f5::json::assertion::checker f5::json::assertion::const_checker =
+        [](f5::u8view rule,
+           f5::json::value part,
+           f5::json::validation::annotations an) {
+            if (an.data[an.dpos] == part) {
+                return validation::result{std::move(an)};
+            } else {
+                return validation::result{rule, an.spos / rule,
+                                          std::move(an.dpos)};
+            }
+        };
 
 
 const f5::json::assertion::checker f5::json::assertion::enum_checker =
@@ -106,8 +107,10 @@ const f5::json::assertion::checker f5::json::assertion::if_checker =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::not_checker = [](f5::u8view rule,
-                                                                         f5::json::value part,
+const f5::json::assertion::checker f5::json::assertion::not_checker = [](f5::u8view
+                                                                                 rule,
+                                                                         f5::json::value
+                                                                                 part,
                                                                          f5::json::validation::annotations
                                                                                  an) {
     if (validation::first_error(an, an.spos / rule, an.dpos)) {
@@ -128,7 +131,8 @@ const f5::json::assertion::checker f5::json::assertion::one_of_checker =
                         "anyOf -- must be a non-empty array", part);
             }
             std::size_t count{};
-            for (std::size_t index{}; index < part.size(); ++index && count < 2) {
+            for (std::size_t index{}; index < part.size();
+                 ++index && count < 2) {
                 auto valid = validation::first_error(
                         an, an.spos / rule / index, an.dpos);
                 if (valid) {
@@ -144,8 +148,10 @@ const f5::json::assertion::checker f5::json::assertion::one_of_checker =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8view rule,
-                                                                          f5::json::value part,
+const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8view
+                                                                                  rule,
+                                                                          f5::json::value
+                                                                                  part,
                                                                           f5::json::validation::annotations
                                                                                   an) {
     struct typecheck {

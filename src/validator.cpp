@@ -40,7 +40,8 @@ namespace {
         a["not"] = f5::json::assertion::not_checker;
         a["oneOf"] = f5::json::assertion::one_of_checker;
         a["pattern"] = f5::json::assertion::pattern_checker;
-        a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
+        a["patternProperties"] =
+                f5::json::assertion::pattern_properties_checker;
         a["properties"] = f5::json::assertion::properties_checker;
         a["propertyNames"] = f5::json::assertion::property_names_checker;
         a["required"] = f5::json::assertion::required_checker;
@@ -104,7 +105,8 @@ auto f5::json::validation::first_error(annotations an) -> result {
                         return annotations(std::move(an), std::move(valid));
                 } else {
                     const auto &cache = *an.schemas;
-                    if (const auto frag = std::find(ref.begin(), ref.end(), '#');
+                    if (const auto frag =
+                                std::find(ref.begin(), ref.end(), '#');
                         frag == ref.end()) {
                         const fostlib::url u{an.spos_url(), ref};
                         const auto &ref_schema = cache[u.as_string()];

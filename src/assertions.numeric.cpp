@@ -28,14 +28,14 @@ namespace {
                         [&](int64_t v) mutable {
                             return p(bound.value(), v)
                                     ? f5::json::validation::result{std::move(an)}
-                                    : f5::json::validation::result{rule, an.spos,
-                                                                   an.dpos};
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
                         },
                         [&](double v) mutable {
                             return p(bound.value(), v)
                                     ? f5::json::validation::result{std::move(an)}
-                                    : f5::json::validation::result{rule, an.spos,
-                                                                   an.dpos};
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
                         },
                         [&](const auto &) mutable {
                             return f5::json::validation::result{std::move(an)};
@@ -45,8 +45,8 @@ namespace {
                         [&](int64_t v) mutable {
                             return p(bound.value(), v)
                                     ? f5::json::validation::result{std::move(an)}
-                                    : f5::json::validation::result{rule, an.spos,
-                                                                   an.dpos};
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
                         },
                         [&](double v) mutable {
                             bool passed;
@@ -57,8 +57,8 @@ namespace {
                             }
                             return passed
                                     ? f5::json::validation::result{std::move(an)}
-                                    : f5::json::validation::result{rule, an.spos,
-                                                                   an.dpos};
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
                         },
                         [&](const auto &) mutable {
                             return f5::json::validation::result{std::move(an)};
@@ -71,10 +71,12 @@ namespace {
         };
     };
 }
-const f5::json::assertion::checker f5::json::assertion::exclusive_maximum_checker =
-        bounds_checker("exclusiveMaximum", [](auto m, auto v) { return v < m; });
-const f5::json::assertion::checker f5::json::assertion::exclusive_minimum_checker =
-        bounds_checker("exclusiveMinimum", [](auto m, auto v) { return v > m; });
+const f5::json::assertion::checker
+        f5::json::assertion::exclusive_maximum_checker = bounds_checker(
+                "exclusiveMaximum", [](auto m, auto v) { return v < m; });
+const f5::json::assertion::checker
+        f5::json::assertion::exclusive_minimum_checker = bounds_checker(
+                "exclusiveMinimum", [](auto m, auto v) { return v > m; });
 const f5::json::assertion::checker f5::json::assertion::maximum_checker =
         bounds_checker("maximum", [](auto m, auto v) { return v <= m; });
 const f5::json::assertion::checker f5::json::assertion::minimum_checker =

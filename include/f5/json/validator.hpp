@@ -54,7 +54,8 @@ namespace f5 {
               private:
                 friend class json::schema;
                 /// Construct the initial location
-                annotations(const json::schema &s, pointer sp, value d, pointer dp);
+                annotations(
+                        const json::schema &s, pointer sp, value d, pointer dp);
 
               public:
                 /// Construct a later annotation, but allow more replacements
@@ -99,7 +100,7 @@ namespace f5 {
                 result(u8view assertion, pointer spos, pointer dpos)
                 : outcome{error{assertion, std::move(spos), std::move(dpos)}} {}
                 /// Return an annotation for merging into the base one
-                result(annotations an): outcome{std::move(an)} {}
+                result(annotations an) : outcome{std::move(an)} {}
 
                 /// Return `true` if the result is that validation *passed*.
                 /// When a value of `false` is returned there will be an
@@ -119,7 +120,8 @@ namespace f5 {
             /// Perform the check
             result first_error(annotations);
             /// Recurse down into another level of the validation
-            inline result first_error(annotations &an, pointer spos, pointer dpos) {
+            inline result
+                    first_error(annotations &an, pointer spos, pointer dpos) {
                 return first_error(
                         annotations{an, std::move(spos), std::move(dpos)});
             }

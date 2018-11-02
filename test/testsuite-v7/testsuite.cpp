@@ -15,8 +15,8 @@
 
 
 namespace {
-    const fostlib::setting<bool>
-            c_verbose(__FILE__, "json-schema-testsuite", "Verbose", false, true);
+    const fostlib::setting<bool> c_verbose(
+            __FILE__, "json-schema-testsuite", "Verbose", false, true);
 
     const fostlib::setting<fostlib::string>
             c_base(__FILE__,
@@ -79,8 +79,8 @@ FSL_MAIN("json-schema-testsuite", "JSON Schema Test Suite Runner")
                         ++failed;
                         ss << " FAILED\n";
                         if (not result) {
-                            auto e{(f5::json::validation::result::error)std::move(
-                                    result)};
+                            auto e{(f5::json::validation::result::error)
+                                           std::move(result)};
                             ss << "  " << e.assertion << "\n";
                         }
                     }

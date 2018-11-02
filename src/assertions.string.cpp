@@ -14,8 +14,8 @@ const f5::json::assertion::checker f5::json::assertion::max_length_checker =
         [](f5::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
-            auto string =
-                    fostlib::coerce<std::optional<f5::u8view>>(an.data[an.dpos]);
+            auto string = fostlib::coerce<std::optional<f5::u8view>>(
+                    an.data[an.dpos]);
             if (not string) return validation::result{std::move(an)};
             if (string->code_points() <= fostlib::coerce<int64_t>(part)) {
                 return validation::result{std::move(an)};
@@ -29,8 +29,8 @@ const f5::json::assertion::checker f5::json::assertion::min_length_checker =
         [](f5::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
-            auto string =
-                    fostlib::coerce<std::optional<f5::u8view>>(an.data[an.dpos]);
+            auto string = fostlib::coerce<std::optional<f5::u8view>>(
+                    an.data[an.dpos]);
             if (not string) return validation::result{std::move(an)};
             if (string->code_points() >= fostlib::coerce<int64_t>(part)) {
                 return validation::result{std::move(an)};
@@ -44,8 +44,8 @@ const f5::json::assertion::checker f5::json::assertion::pattern_checker =
         [](f5::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
-            auto string =
-                    fostlib::coerce<std::optional<f5::u8view>>(an.data[an.dpos]);
+            auto string = fostlib::coerce<std::optional<f5::u8view>>(
+                    an.data[an.dpos]);
             if (not string) return validation::result{std::move(an)};
             std::regex re{fostlib::coerce<fostlib::string>(part).std_str()};
             if (std::regex_search(

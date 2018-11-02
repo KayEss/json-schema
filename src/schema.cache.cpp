@@ -58,7 +58,7 @@ namespace {
  */
 
 
-f5::json::schema_cache::schema_cache(): base(root_cache()) {}
+f5::json::schema_cache::schema_cache() : base(root_cache()) {}
 f5::json::schema_cache::schema_cache(std::shared_ptr<schema_cache> b)
 : base(b) {}
 
@@ -69,10 +69,12 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
         if (const auto p = fostlib::coerce<std::optional<f5::u8view>>(
                     c_schema_path.value());
             p) {
-            const auto fn =
-                    fostlib::coerce<boost::filesystem::path>(fostlib::string(*p));
-            fostlib::json s{f5::json::value::parse(fostlib::utf::load_file(fn))};
-            cache->insert(schema{fostlib::url{fostlib::url{}, fn}, std::move(s)});
+            const auto fn = fostlib::coerce<boost::filesystem::path>(
+                    fostlib::string(*p));
+            fostlib::json s{
+                    f5::json::value::parse(fostlib::utf::load_file(fn))};
+            cache->insert(
+                    schema{fostlib::url{fostlib::url{}, fn}, std::move(s)});
         } else if (c_schema_path.value().isarray()) {
             for (const auto filepath : c_schema_path.value()) {
                 throw fostlib::exceptions::not_implemented(

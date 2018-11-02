@@ -13,7 +13,11 @@
 
 
 const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(
-        __FILE__, "JSON schema validation", "Schema loaders", value::array_t{}, true);
+        __FILE__,
+        "JSON schema validation",
+        "Schema loaders",
+        value::array_t{},
+        true);
 
 
 /**
@@ -80,13 +84,14 @@ namespace {
                         if (config.has_key("base")) {
                             fostlib::url base{fostlib::coerce<f5::u8view>(
                                     config["base"])};
-                            fostlib::url fetch{base,
-                                               url.substr(prefix.code_points())};
+                            fostlib::url fetch{
+                                    base, url.substr(prefix.code_points())};
                             try {
                                 return http(base, fetch);
                             } catch (fostlib::exceptions::exception &e) {
                                 fostlib::insert(e.data(), "schema", "url", url);
-                                fostlib::insert(e.data(), "schema", "base", base);
+                                fostlib::insert(
+                                        e.data(), "schema", "base", base);
                                 fostlib::insert(
                                         e.data(), "schema", "fetching", fetch);
                                 throw;
