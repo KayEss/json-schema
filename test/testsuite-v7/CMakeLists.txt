@@ -7,12 +7,6 @@ add_executable(json-schema-testsuite EXCLUDE_FROM_ALL testsuite.cpp)
 target_link_libraries(json-schema-testsuite f5-json-schema fost-cli fost-inet)
 add_dependencies(stress json-schema-testsuite)
 
-## The to do list:
-##
-## * definitions.json
-## * ref.json
-## * refRemote.json
-
 function(draftv7 name)
     add_custom_command(TARGET json-schema-testsuite
             COMMAND json-schema-testsuite -b false
