@@ -81,6 +81,6 @@ add_custom_target(json-schema-tests DEPENDS
         test-alltypes-invalid
         test-null
         test-null-invalid
-#         test-z-json-schema
+        test-z-json-schema
     )
 add_dependencies(check json-schema-tests)
