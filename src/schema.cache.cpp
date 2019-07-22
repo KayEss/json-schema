@@ -1,5 +1,6 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -45,8 +46,32 @@ namespace {
         return m;
     }
     auto &g_loader_cache() {
-        static std::map<fostlib::string, std::unique_ptr<f5::json::schema>> c;
+        static std::map<fostlib::url, std::unique_ptr<f5::json::schema>> c;
         return c;
+    }
+    auto &g_pre_load() {
+        static auto cache = []() {
+            auto cache = std::make_shared<f5::json::schema_cache>(nullptr);
+            if (const auto p = fostlib::coerce<std::optional<f5::u8view>>(
+                        f5::json::c_schema_path.value());
+                p) {
+                const auto fn =
+                        fostlib::coerce<fostlib::fs::path>(fostlib::string(*p));
+                fostlib::json s{
+                        f5::json::value::parse(fostlib::utf::load_file(fn))};
+                cache->insert(f5::json::schema{fostlib::url{fostlib::url{}, fn},
+                                               std::move(s)});
+            } else if (f5::json::c_schema_path.value().isarray()) {
+                for (const auto filepath : f5::json::c_schema_path.value()) {
+                    throw fostlib::exceptions::not_implemented(
+                            __PRETTY_FUNCTION__,
+                            "This type of schema load path not yet supported",
+                            f5::json::c_schema_path.value());
+                }
+            }
+            return cache;
+        }();
+        return cache;
     }
 
 
@@ -64,68 +89,93 @@ f5::json::schema_cache::schema_cache(std::shared_ptr<schema_cache> b)
 
 
 auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
-    static std::shared_ptr<schema_cache> cache = []() {
-        auto cache = std::make_shared<schema_cache>(nullptr);
-        if (const auto p = fostlib::coerce<std::optional<f5::u8view>>(
-                    c_schema_path.value());
-            p) {
-            const auto fn = fostlib::coerce<boost::filesystem::path>(
-                    fostlib::string(*p));
-            fostlib::json s{
-                    f5::json::value::parse(fostlib::utf::load_file(fn))};
-            cache->insert(
-                    schema{fostlib::url{fostlib::url{}, fn}, std::move(s)});
-        } else if (c_schema_path.value().isarray()) {
-            for (const auto filepath : c_schema_path.value()) {
-                throw fostlib::exceptions::not_implemented(
-                        "f5::json::schema_cache::root_cache",
-                        "This type of schema load path not yet supported",
-                        c_schema_path.value());
-            }
-        }
-        return cache;
-    }();
+    /**
+     * This "special value" for the root cache is pretty bad, but we can't put
+     * a cache in a schema and load schemas during the root cache creation
+     * because we end up in an infinite loop.
+     *
+     * The returned pointer cannot be `nullptr` or we will go into an infinite
+     * loop chasing down the pre-load list before we bottom out and try to
+     * load in more schemas using the schema loading mechanism.
+     */
+    static auto cache{
+            std::make_shared<schema_cache>(std::shared_ptr<schema_cache>{})};
     return cache;
 }
 
 
-auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
-    try {
-        const auto pos = cache.find(u);
-        if (pos == cache.end()) {
-            if (base) {
-                return (*base)[u];
+auto f5::json::schema_cache::recursive_lookup(fostlib::url const &u) const
+        -> schema const * {
+    const auto pos = cache.find(u);
+    if (pos == cache.end()) {
+        if (base == root_cache()) {
+            return (*g_pre_load()).recursive_lookup(u);
+        } else if (base) {
+            return (*base).recursive_lookup(u);
+        } else {
+            std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
+            if (auto pos = g_loader_cache().find(u);
+                pos != g_loader_cache().end()) {
+                return pos->second.get();
             } else {
-                std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
-                if (auto pos = g_loader_cache().find(u);
-                    pos != g_loader_cache().end()) {
-                    return *pos->second;
+                auto l = load_schema(u.as_string());
+                if (l) {
+                    return (g_loader_cache()[u] = std::move(l)).get();
                 } else {
-                    auto l = load_schema(u);
-                    if (l) {
-                        return *(
-                                g_loader_cache()[fostlib::string{u}] =
-                                        std::move(l));
-                    } else {
-                        throw fostlib::exceptions::not_implemented(
-                                __PRETTY_FUNCTION__, "Schema not found", u);
-                    }
+                    return nullptr;
                 }
             }
+        }
+    } else {
+        return &pos->second;
+    }
+}
+
+
+auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
+    return (*this)[fostlib::url{u}].first;
+}
+
+
+auto f5::json::schema_cache::operator[](fostlib::url u) const
+        -> std::pair<schema const &, fostlib::jcursor> {
+    try {
+        if (not u.fragment()) u.fragment(fostlib::string{});
+        auto const *s = recursive_lookup(u);
+        if (s != nullptr) {
+            return {*s, fostlib::jcursor{}};
         } else {
-            return pos->second;
+            if (f5::u8view{u.fragment().value()}.starts_with("/")) {
+                auto sptr = u.fragment().value();
+                u.fragment(fostlib::string{});
+                s = recursive_lookup(u);
+                if (s == nullptr) {
+                    throw fostlib::exceptions::not_implemented(
+                            __PRETTY_FUNCTION__, "Schema not found", u);
+                } else {
+                    sptr = fostlib::ascii_printable_string{"#" + sptr};
+                    return {*s,
+                            fostlib::jcursor::parse_json_pointer_fragment(sptr)};
+                }
+            } else {
+                throw fostlib::exceptions::not_implemented(
+                        __PRETTY_FUNCTION__, "Schema not found", u);
+            }
         }
     } catch (fostlib::exceptions::exception &e) {
         if (not e.data().has_key("schema-cache")) {
             std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
             for (const auto &p : g_loader_cache()) {
-                fostlib::push_back(e.data(), "schema-cache", "", p.first);
+                fostlib::push_back(
+                        e.data(), "schema-cache", "", p.first.as_string());
             }
         }
         const fostlib::string cp{std::to_string((int64_t)this)};
         fostlib::insert(e.data(), "schema-cache", cp, value::array_t{});
         for (const auto &c : cache) {
-            fostlib::push_back(e.data(), "schema-cache", cp, c.first);
+            fostlib::push_back(
+                    e.data(), "schema-cache", cp,
+                    fostlib::coerce<fostlib::string>(c.first));
         }
         throw;
     }
@@ -133,19 +183,14 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
 
 
 auto f5::json::schema_cache::insert(schema s) -> const schema & {
-    if (s.assertions().has_key("$id")) {
-        auto parts = fostlib::partition(
-                fostlib::coerce<fostlib::string>(s.assertions()["$id"]), "#");
-        cache.insert(std::make_pair(parts.first, s));
-    }
-    auto pos = cache.insert(
-            std::make_pair(fostlib::coerce<fostlib::string>(s.self()), s));
+    auto pos = cache.insert(std::make_pair(s.self(), s));
     return pos.first->second;
 }
 
 
-auto f5::json::schema_cache::insert(fostlib::string n, schema s)
+auto f5::json::schema_cache::insert(fostlib::url n, schema s)
         -> const schema & {
-    cache.insert(std::make_pair(n, s));
+    if (not n.fragment()) n.fragment(fostlib::string{});
+    cache.insert(std::make_pair(std::move(n), s));
     return insert(s);
 }
