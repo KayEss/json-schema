@@ -1,11 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 #include <f5/json/schema.hpp>
@@ -34,7 +26,7 @@ namespace f5 {
             schema_cache(std::shared_ptr<schema_cache>);
 
             /// Perform a lookup in this case and its bases
-            const schema &operator[](f5::u8view) const;
+            const schema &operator[](felspar::u8view) const;
 
             /// The root cache. The root cache is the only cache which
             /// should have an empty base.

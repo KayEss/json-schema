@@ -1,13 +1,5 @@
-/**
-    Copyright 2018-2019, Proteus Technologies Co Ltd.
-   <https://support.felspar.com/>
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
-*/
-
 #include <f5/json/schema.loaders.hpp>
-#include <f5/threading/map.hpp>
+#include <felspar/threading/map.hpp>
 #include <fost/log>
 #include <fost/http>
 #include <fost/insert>
@@ -34,25 +26,25 @@ namespace {
 
 
 namespace {
-    f5::tsmap<f5::lstring, f5::json::schema_loader_fn> g_loaders;
+    felspar::threading::tsmap<felspar::lstring, f5::json::schema_loader_fn> g_loaders;
 }
 
 
-f5::json::schema_loader::schema_loader(lstring n, schema_loader_fn f)
+f5::json::schema_loader::schema_loader(felspar::lstring n, schema_loader_fn f)
 : lambda(f) {
     g_loaders.insert_or_assign(n, f);
 }
 
 
-std::unique_ptr<f5::json::schema> f5::json::load_schema(u8view url) {
+std::unique_ptr<f5::json::schema> f5::json::load_schema(felspar::u8view url) {
     for (const auto loader : c_schema_loaders.value()) {
-        auto fn = g_loaders.find(fostlib::coerce<u8view>(loader["loader"]));
+        auto fn = g_loaders.find(fostlib::coerce<felspar::u8view>(loader["loader"]));
         if (fn) {
             auto s = fn(url, loader);
             if (s) return s;
         } else {
             throw fostlib::exceptions::not_implemented(
-                    __PRETTY_FUNCTION__, "Loader not found", loader);
+                    "Loader not found", loader);
         }
     }
     return {};
@@ -78,17 +70,17 @@ namespace {
 
     const f5::json::schema_loader c_http{
             "http",
-            [](f5::u8view url,
+            [](felspar::u8view url,
                f5::json::value config) -> std::unique_ptr<f5::json::schema> {
                 auto logger{fostlib::log::debug(c_fost_json_schema_loader)};
                 logger("requested-url", url);
                 if (config.has_key("prefix")) {
                     const auto prefix =
-                            fostlib::coerce<f5::u8view>(config["prefix"]);
+                            fostlib::coerce<felspar::u8view>(config["prefix"]);
                     logger("prefix", prefix);
                     if (url.starts_with(prefix)) {
                         if (config.has_key("base")) {
-                            fostlib::url base{fostlib::coerce<f5::u8view>(
+                            fostlib::url base{fostlib::coerce<felspar::u8view>(
                                     config["base"])};
                             fostlib::url fetch{
                                     base, url.substr(prefix.code_points())};
@@ -105,7 +97,7 @@ namespace {
                                 throw;
                             }
                         } else {
-                            fostlib::url base{fostlib::coerce<f5::u8view>(
+                            fostlib::url base{fostlib::coerce<felspar::u8view>(
                                     config["prefix"])};
                             fostlib::url u{url};
                             logger("base", base)("fetching", u)("found", true);

@@ -1,10 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/schema.hpp>
 
 #include <fost/file>
@@ -31,7 +24,7 @@ namespace {
 
     auto load_json(fostlib::string fn) {
         return f5::json::value::parse(fostlib::utf::load_file(
-                fostlib::coerce<boost::filesystem::path>(fn)));
+                fostlib::coerce<std::filesystem::path>(fn)));
     }
 
     void

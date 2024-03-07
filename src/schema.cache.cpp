@@ -1,13 +1,6 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/schema.cache.hpp>
 #include <f5/json/schema.loaders.hpp>
-#include <f5/threading/map.hpp>
+#include <felspar/threading/map.hpp>
 #include <fost/insert>
 #include <fost/push_back>
 
@@ -66,10 +59,10 @@ f5::json::schema_cache::schema_cache(std::shared_ptr<schema_cache> b)
 auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
     static std::shared_ptr<schema_cache> cache = []() {
         auto cache = std::make_shared<schema_cache>(nullptr);
-        if (const auto p = fostlib::coerce<std::optional<f5::u8view>>(
+        if (const auto p = fostlib::coerce<std::optional<felspar::u8view>>(
                     c_schema_path.value());
             p) {
-            const auto fn = fostlib::coerce<boost::filesystem::path>(
+            const auto fn = fostlib::coerce<std::filesystem::path>(
                     fostlib::string(*p));
             fostlib::json s{
                     f5::json::value::parse(fostlib::utf::load_file(fn))};
@@ -78,7 +71,6 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
         } else if (c_schema_path.value().isarray()) {
             for (const auto filepath : c_schema_path.value()) {
                 throw fostlib::exceptions::not_implemented(
-                        "f5::json::schema_cache::root_cache",
                         "This type of schema load path not yet supported",
                         c_schema_path.value());
             }
@@ -89,7 +81,7 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 }
 
 
-auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
+auto f5::json::schema_cache::operator[](felspar::u8view u) const -> const schema & {
     try {
         const auto pos = cache.find(u);
         if (pos == cache.end()) {
@@ -108,7 +100,7 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
                                         std::move(l));
                     } else {
                         throw fostlib::exceptions::not_implemented(
-                                __PRETTY_FUNCTION__, "Schema not found", u);
+                                "Schema not found", u);
                     }
                 }
             }

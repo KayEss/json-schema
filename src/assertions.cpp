@@ -1,20 +1,12 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/assertions.hpp>
 
 
 const f5::json::assertion::checker f5::json::assertion::all_of_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (not part.isarray() || part.size() == 0) {
                 throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__,
                         "allOf -- must be a non-empty array", part);
             }
             for (std::size_t index{}; index < part.size(); ++index) {
@@ -28,12 +20,11 @@ const f5::json::assertion::checker f5::json::assertion::all_of_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::any_of_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (not part.isarray() || part.size() == 0) {
                 throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__,
                         "anyOf -- must be a non-empty array", part);
             }
             for (std::size_t index{}; index < part.size(); ++index) {
@@ -46,7 +37,7 @@ const f5::json::assertion::checker f5::json::assertion::any_of_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::always =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             return validation::result{std::move(an)};
@@ -54,7 +45,7 @@ const f5::json::assertion::checker f5::json::assertion::always =
 
 
 const f5::json::assertion::checker f5::json::assertion::const_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (an.data[an.dpos] == part) {
@@ -67,7 +58,7 @@ const f5::json::assertion::checker f5::json::assertion::const_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::enum_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (part.isarray()) {
@@ -79,14 +70,14 @@ const f5::json::assertion::checker f5::json::assertion::enum_checker =
                 }
             } else {
                 throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__, "enum_checker not array", part);
+                        "enum_checker not array", part);
             }
             return validation::result{rule, an.spos / rule, an.dpos};
         };
 
 
 const f5::json::assertion::checker f5::json::assertion::if_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             auto passed = validation::first_error(an, an.spos / rule, an.dpos);
@@ -107,7 +98,7 @@ const f5::json::assertion::checker f5::json::assertion::if_checker =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::not_checker = [](f5::u8view
+const f5::json::assertion::checker f5::json::assertion::not_checker = [](felspar::u8view
                                                                                  rule,
                                                                          f5::json::value
                                                                                  part,
@@ -122,12 +113,11 @@ const f5::json::assertion::checker f5::json::assertion::not_checker = [](f5::u8v
 
 
 const f5::json::assertion::checker f5::json::assertion::one_of_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (not part.isarray() || part.size() == 0) {
                 throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__,
                         "anyOf -- must be a non-empty array", part);
             }
             std::size_t count{};
@@ -148,14 +138,14 @@ const f5::json::assertion::checker f5::json::assertion::one_of_checker =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8view
+const f5::json::assertion::checker f5::json::assertion::type_checker = [](felspar::u8view
                                                                                   rule,
                                                                           f5::json::value
                                                                                   part,
                                                                           f5::json::validation::annotations
                                                                                   an) {
     struct typecheck {
-        f5::u8view type;
+        felspar::u8view type;
 
         bool operator()(std::monostate) { return type == "null"; }
         bool operator()(bool) { return type == "boolean"; }
@@ -166,11 +156,11 @@ const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8
         bool operator()(std::shared_ptr<fostlib::string>) {
             return type == "string";
         }
-        bool operator()(f5::u8view) { return type == "string"; }
+        bool operator()(felspar::u8view) { return type == "string"; }
         bool operator()(fostlib::json::array_p) { return type == "array"; }
         bool operator()(fostlib::json::object_p) { return type == "object"; }
     };
-    const auto str = fostlib::coerce<fostlib::nullable<f5::u8view>>(part);
+    const auto str = fostlib::coerce<fostlib::nullable<felspar::u8view>>(part);
     if (str) {
         if (not an.data[an.dpos].apply_visitor(typecheck{str.value()})) {
             return validation::result{
@@ -178,7 +168,7 @@ const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8
         }
     } else if (part.isarray()) {
         for (const auto t : part) {
-            const auto str = fostlib::coerce<f5::u8view>(t);
+            const auto str = fostlib::coerce<felspar::u8view>(t);
             if (an.data[an.dpos].apply_visitor(typecheck{str})) {
                 return validation::result{std::move(an)};
             }
@@ -186,7 +176,7 @@ const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8
         return validation::result{rule, std::move(an.spos), std::move(an.dpos)};
     } else {
         throw fostlib::exceptions::not_implemented(
-                __PRETTY_FUNCTION__, "type check", part);
+                "type check", part);
     }
     return validation::result{std::move(an)};
 };

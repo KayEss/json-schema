@@ -1,10 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/assertions.hpp>
 
 
@@ -19,8 +12,8 @@ namespace {
 
 
     template<typename P>
-    const auto bounds_checker(f5::lstring name, const P p) {
-        return [=](f5::u8view rule, f5::json::value part,
+    const auto bounds_checker(felspar::lstring name, const P p) {
+        return [=](felspar::u8view rule, f5::json::value part,
                    f5::json::validation::annotations an)
                        -> f5::json::validation::result {
             if (const auto bound{part.get<int64_t>()}; bound) {
@@ -64,8 +57,7 @@ namespace {
                             return f5::json::validation::result{std::move(an)};
                         });
             } else {
-                throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__, name, part);
+                throw fostlib::exceptions::not_implemented(name, part);
             }
             return f5::json::validation::result{std::move(an)};
         };

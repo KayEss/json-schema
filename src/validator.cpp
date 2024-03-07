@@ -1,10 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/assertions.hpp>
 #include <f5/json/schema.cache.hpp>
 #include <fost/push_back>
@@ -15,7 +8,7 @@ namespace {
 
 
     const auto g_assertions = []() {
-        std::map<f5::u8view, f5::json::assertion::checker> a;
+        std::map<felspar::u8view, f5::json::assertion::checker> a;
         a["additionalProperties"] =
                 f5::json::assertion::additional_properties_checker;
         a["allOf"] = f5::json::assertion::all_of_checker;
@@ -72,7 +65,7 @@ f5::json::validation::result::operator error() && {
     struct v {
         error operator()(error &&e) { return std::move(e); };
         error operator()(annotations &&) {
-            throw fostlib::exceptions::not_implemented{__PRETTY_FUNCTION__};
+            throw fostlib::exceptions::not_implemented{};
         };
     };
     return std::visit(v{}, std::move(outcome));
@@ -92,12 +85,12 @@ auto f5::json::validation::first_error(annotations an) -> result {
             return result{"false", std::move(an.spos), std::move(an.dpos)};
         } else if (auto part = an.sroot[an.spos]; part.isobject()) {
             if (part.has_key("$ref")) {
-                const auto ref = fostlib::coerce<f5::u8view>(part["$ref"]);
+                const auto ref = fostlib::coerce<felspar::u8view>(part["$ref"]);
                 if (ref.bytes() && *ref.begin() == '#') {
                     auto valid = first_error(
                             an,
                             fostlib::jcursor::parse_json_pointer_fragment(
-                                    fostlib::coerce<f5::u8view>(part["$ref"])),
+                                    fostlib::coerce<felspar::u8view>(part["$ref"])),
                             an.dpos);
                     if (not valid)
                         return valid;
@@ -115,13 +108,13 @@ auto f5::json::validation::first_error(annotations an) -> result {
                         if (not valid) return valid;
                         return annotations{std::move(an), std::move(valid)};
                     } else {
-                        const f5::u8view us{ref.begin(), frag};
+                        const felspar::u8view us{ref.begin(), frag};
                         const fostlib::url u{an.spos_url(), us};
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(annotations{
                                 an, ref_schema,
                                 fostlib::jcursor::parse_json_pointer_fragment(
-                                        f5::u8view{frag, ref.end()}),
+                                        felspar::u8view{frag, ref.end()}),
                                 an.data, an.dpos});
                         if (not valid) return valid;
                         return annotations(std::move(an), std::move(valid));
@@ -139,7 +132,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
             }
         } else {
             throw fostlib::exceptions::not_implemented(
-                    __func__, "A schema must be a boolean or an object", part);
+                    "A schema must be a boolean or an object", part);
         }
         return result{std::move(an)};
     } catch (fostlib::exceptions::exception &e) {

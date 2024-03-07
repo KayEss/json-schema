@@ -1,14 +1,7 @@
-/**
-    Copyright 2018-2019, Proteus Technologies Co Ltd.
-   <https://support.felspar.com/>
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
-*/
-
 #include <f5/json/assertions.hpp>
 
 #include <regex>
+#include <set>
 
 
 namespace {
@@ -55,7 +48,7 @@ namespace {
 
 const f5::json::assertion::checker
         f5::json::assertion::additional_properties_checker =
-                [](f5::u8view rule,
+                [](felspar::u8view rule,
                    f5::json::value part,
                    f5::json::validation::annotations an) {
                     if (an.sroot[an.spos].has_key("properties")
@@ -81,7 +74,7 @@ const f5::json::assertion::checker
 
 
 const f5::json::assertion::checker f5::json::assertion::dependencies_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (part.isobject()) {
@@ -93,7 +86,7 @@ const f5::json::assertion::checker f5::json::assertion::dependencies_checker =
                         if (part[prop.first].isarray()) {
                             for (const auto name : part[prop.first]) {
                                 if (not properties.has_key(
-                                            fostlib::coerce<f5::u8view>(name))) {
+                                            fostlib::coerce<felspar::u8view>(name))) {
                                     return validation::result{
                                             rule, an.spos / rule / name,
                                             an.dpos};
@@ -109,14 +102,14 @@ const f5::json::assertion::checker f5::json::assertion::dependencies_checker =
                 }
             } else {
                 throw fostlib::exceptions::not_implemented(
-                        __func__, "dependencies must be an object", part);
+                        "dependencies must be an object", part);
             }
             return validation::result{std::move(an)};
         };
 
 
 const f5::json::assertion::checker f5::json::assertion::max_properties_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             auto properties = an.data[an.dpos];
@@ -131,7 +124,7 @@ const f5::json::assertion::checker f5::json::assertion::max_properties_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::min_properties_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             auto properties = an.data[an.dpos];
@@ -147,7 +140,7 @@ const f5::json::assertion::checker f5::json::assertion::min_properties_checker =
 
 const f5::json::assertion::checker
         f5::json::assertion::pattern_properties_checker =
-                [](f5::u8view rule,
+                [](felspar::u8view rule,
                    f5::json::value part,
                    f5::json::validation::annotations an) {
                     if (an.sroot[an.spos].has_key("properties")) {
@@ -171,7 +164,6 @@ const f5::json::assertion::checker
                         }
                     } else {
                         throw fostlib::exceptions::not_implemented(
-                                __func__,
                                 "pattern_properties_checker -- not object",
                                 part);
                     }
@@ -180,7 +172,7 @@ const f5::json::assertion::checker
 
 
 const f5::json::assertion::checker f5::json::assertion::properties_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             if (part.isobject()) {
@@ -211,14 +203,14 @@ const f5::json::assertion::checker f5::json::assertion::properties_checker =
                 }
             } else {
                 throw fostlib::exceptions::not_implemented(
-                        __func__, "properties check must be an object", part);
+                        "properties check must be an object", part);
             }
             return validation::result{std::move(an)};
         };
 
 
 const f5::json::assertion::checker f5::json::assertion::property_names_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             auto properties = an.data[an.dpos];
@@ -237,13 +229,13 @@ const f5::json::assertion::checker f5::json::assertion::property_names_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::required_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             const auto obj = an.data[an.dpos];
             if (obj.isobject()) {
                 for (const auto &check : part) {
-                    if (not obj.has_key(fostlib::coerce<f5::u8view>(check))) {
+                    if (not obj.has_key(fostlib::coerce<felspar::u8view>(check))) {
                         return validation::result(
                                 rule, an.spos / rule, an.dpos);
                     }

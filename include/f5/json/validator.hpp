@@ -1,11 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 #include <fost/json>
@@ -87,7 +79,7 @@ namespace f5 {
                 /// In the case of a validation error then this describes where
                 /// it happened
                 struct error {
-                    f5::u8view assertion;
+                    felspar::u8view assertion;
                     pointer spos, dpos;
                 };
 
@@ -97,7 +89,7 @@ namespace f5 {
 
               public:
                 /// Describe a result that has an error
-                result(u8view assertion, pointer spos, pointer dpos)
+                result(felspar::u8view assertion, pointer spos, pointer dpos)
                 : outcome{error{assertion, std::move(spos), std::move(dpos)}} {}
                 /// Return an annotation for merging into the base one
                 result(annotations an) : outcome{std::move(an)} {}

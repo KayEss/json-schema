@@ -1,15 +1,10 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/assertions.hpp>
+
+#include <set>
 
 
 const f5::json::assertion::checker f5::json::assertion::contains_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             const auto array = an.data[an.dpos];
@@ -26,7 +21,7 @@ const f5::json::assertion::checker f5::json::assertion::contains_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::items_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             const auto array = an.data[an.dpos];
@@ -64,7 +59,7 @@ const f5::json::assertion::checker f5::json::assertion::items_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::max_items_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             value array = an.data[an.dpos];
@@ -80,7 +75,7 @@ const f5::json::assertion::checker f5::json::assertion::max_items_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::min_items_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             value array = an.data[an.dpos];
@@ -96,7 +91,7 @@ const f5::json::assertion::checker f5::json::assertion::min_items_checker =
 
 
 const f5::json::assertion::checker f5::json::assertion::unique_items_checker =
-        [](f5::u8view rule,
+        [](felspar::u8view rule,
            f5::json::value part,
            f5::json::validation::annotations an) {
             value array = an.data[an.dpos];
@@ -114,7 +109,7 @@ const f5::json::assertion::checker f5::json::assertion::unique_items_checker =
                     return validation::result{std::move(an)};
                 } else {
                     throw fostlib::exceptions::not_implemented(
-                            __func__, "unique items -- must be true or false",
+                            "unique items -- must be true or false",
                             part);
                 }
             }

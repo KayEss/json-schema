@@ -1,10 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/assertions.hpp>
 #include <f5/json/schema.cache.hpp>
 #include <fost/push_back>
@@ -121,7 +114,7 @@ fostlib::url f5::json::validation::annotations::spos_url() const {
         pointer from_base{spos.begin(), pos}, to_tip{pos, end};
         if (sroot[from_base].has_key("$id")) {
             u = fostlib::url{
-                    u, fostlib::coerce<u8view>(sroot[from_base]["$id"])};
+                    u, fostlib::coerce<felspar::u8view>(sroot[from_base]["$id"])};
             u = fostlib::url{u, pointer{pos, end}};
         }
     }
