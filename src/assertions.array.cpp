@@ -109,8 +109,7 @@ const f5::json::assertion::checker f5::json::assertion::unique_items_checker =
                     return validation::result{std::move(an)};
                 } else {
                     throw fostlib::exceptions::not_implemented(
-                            "unique items -- must be true or false",
-                            part);
+                            "unique items -- must be true or false", part);
                 }
             }
             return validation::result{std::move(an)};

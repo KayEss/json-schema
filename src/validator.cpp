@@ -90,7 +90,8 @@ auto f5::json::validation::first_error(annotations an) -> result {
                     auto valid = first_error(
                             an,
                             fostlib::jcursor::parse_json_pointer_fragment(
-                                    fostlib::coerce<felspar::u8view>(part["$ref"])),
+                                    fostlib::coerce<felspar::u8view>(
+                                            part["$ref"])),
                             an.dpos);
                     if (not valid)
                         return valid;

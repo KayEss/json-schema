@@ -62,8 +62,8 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
         if (const auto p = fostlib::coerce<std::optional<felspar::u8view>>(
                     c_schema_path.value());
             p) {
-            const auto fn = fostlib::coerce<std::filesystem::path>(
-                    fostlib::string(*p));
+            const auto fn =
+                    fostlib::coerce<std::filesystem::path>(fostlib::string(*p));
             fostlib::json s{
                     f5::json::value::parse(fostlib::utf::load_file(fn))};
             cache->insert(
@@ -81,7 +81,8 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 }
 
 
-auto f5::json::schema_cache::operator[](felspar::u8view u) const -> const schema & {
+auto f5::json::schema_cache::operator[](felspar::u8view u) const
+        -> const schema & {
     try {
         const auto pos = cache.find(u);
         if (pos == cache.end()) {

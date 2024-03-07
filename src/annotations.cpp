@@ -114,7 +114,8 @@ fostlib::url f5::json::validation::annotations::spos_url() const {
         pointer from_base{spos.begin(), pos}, to_tip{pos, end};
         if (sroot[from_base].has_key("$id")) {
             u = fostlib::url{
-                    u, fostlib::coerce<felspar::u8view>(sroot[from_base]["$id"])};
+                    u,
+                    fostlib::coerce<felspar::u8view>(sroot[from_base]["$id"])};
             u = fostlib::url{u, pointer{pos, end}};
         }
     }

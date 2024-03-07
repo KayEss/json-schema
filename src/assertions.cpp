@@ -138,45 +138,48 @@ const f5::json::assertion::checker f5::json::assertion::one_of_checker =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::type_checker = [](felspar::u8view
-                                                                                  rule,
-                                                                          f5::json::value
-                                                                                  part,
-                                                                          f5::json::validation::annotations
-                                                                                  an) {
-    struct typecheck {
-        felspar::u8view type;
+const f5::json::assertion::checker f5::json::assertion::type_checker =
+        [](felspar::u8view rule,
+           f5::json::value part,
+           f5::json::validation::annotations an) {
+            struct typecheck {
+                felspar::u8view type;
 
-        bool operator()(std::monostate) { return type == "null"; }
-        bool operator()(bool) { return type == "boolean"; }
-        bool operator()(double) { return type == "number"; }
-        bool operator()(int64_t) {
-            return type == "integer" || type == "number";
-        }
-        bool operator()(std::shared_ptr<fostlib::string>) {
-            return type == "string";
-        }
-        bool operator()(felspar::u8view) { return type == "string"; }
-        bool operator()(fostlib::json::array_p) { return type == "array"; }
-        bool operator()(fostlib::json::object_p) { return type == "object"; }
-    };
-    const auto str = fostlib::coerce<fostlib::nullable<felspar::u8view>>(part);
-    if (str) {
-        if (not an.data[an.dpos].apply_visitor(typecheck{str.value()})) {
-            return validation::result{
-                    rule, std::move(an.spos), std::move(an.dpos)};
-        }
-    } else if (part.isarray()) {
-        for (const auto t : part) {
-            const auto str = fostlib::coerce<felspar::u8view>(t);
-            if (an.data[an.dpos].apply_visitor(typecheck{str})) {
-                return validation::result{std::move(an)};
+                bool operator()(std::monostate) { return type == "null"; }
+                bool operator()(bool) { return type == "boolean"; }
+                bool operator()(double) { return type == "number"; }
+                bool operator()(int64_t) {
+                    return type == "integer" || type == "number";
+                }
+                bool operator()(std::shared_ptr<fostlib::string>) {
+                    return type == "string";
+                }
+                bool operator()(felspar::u8view) { return type == "string"; }
+                bool operator()(fostlib::json::array_p) {
+                    return type == "array";
+                }
+                bool operator()(fostlib::json::object_p) {
+                    return type == "object";
+                }
+            };
+            const auto str =
+                    fostlib::coerce<fostlib::nullable<felspar::u8view>>(part);
+            if (str) {
+                if (not an.data[an.dpos].apply_visitor(typecheck{str.value()})) {
+                    return validation::result{
+                            rule, std::move(an.spos), std::move(an.dpos)};
+                }
+            } else if (part.isarray()) {
+                for (const auto t : part) {
+                    const auto str = fostlib::coerce<felspar::u8view>(t);
+                    if (an.data[an.dpos].apply_visitor(typecheck{str})) {
+                        return validation::result{std::move(an)};
+                    }
+                }
+                return validation::result{
+                        rule, std::move(an.spos), std::move(an.dpos)};
+            } else {
+                throw fostlib::exceptions::not_implemented("type check", part);
             }
-        }
-        return validation::result{rule, std::move(an.spos), std::move(an.dpos)};
-    } else {
-        throw fostlib::exceptions::not_implemented(
-                "type check", part);
-    }
-    return validation::result{std::move(an)};
-};
+            return validation::result{std::move(an)};
+        };

@@ -26,7 +26,8 @@ namespace {
 
 
 namespace {
-    felspar::threading::tsmap<felspar::lstring, f5::json::schema_loader_fn> g_loaders;
+    felspar::threading::tsmap<felspar::lstring, f5::json::schema_loader_fn>
+            g_loaders;
 }
 
 
@@ -38,7 +39,8 @@ f5::json::schema_loader::schema_loader(felspar::lstring n, schema_loader_fn f)
 
 std::unique_ptr<f5::json::schema> f5::json::load_schema(felspar::u8view url) {
     for (const auto loader : c_schema_loaders.value()) {
-        auto fn = g_loaders.find(fostlib::coerce<felspar::u8view>(loader["loader"]));
+        auto fn = g_loaders.find(
+                fostlib::coerce<felspar::u8view>(loader["loader"]));
         if (fn) {
             auto s = fn(url, loader);
             if (s) return s;

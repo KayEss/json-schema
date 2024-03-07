@@ -86,7 +86,8 @@ const f5::json::assertion::checker f5::json::assertion::dependencies_checker =
                         if (part[prop.first].isarray()) {
                             for (const auto name : part[prop.first]) {
                                 if (not properties.has_key(
-                                            fostlib::coerce<felspar::u8view>(name))) {
+                                            fostlib::coerce<felspar::u8view>(
+                                                    name))) {
                                     return validation::result{
                                             rule, an.spos / rule / name,
                                             an.dpos};
@@ -235,7 +236,8 @@ const f5::json::assertion::checker f5::json::assertion::required_checker =
             const auto obj = an.data[an.dpos];
             if (obj.isobject()) {
                 for (const auto &check : part) {
-                    if (not obj.has_key(fostlib::coerce<felspar::u8view>(check))) {
+                    if (not obj.has_key(
+                                fostlib::coerce<felspar::u8view>(check))) {
                         return validation::result(
                                 rule, an.spos / rule, an.dpos);
                     }
