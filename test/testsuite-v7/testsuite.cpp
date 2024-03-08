@@ -1,10 +1,3 @@
-/**
-    Copyright 2018-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <f5/json/schema.cache.hpp>
 #include <f5/json/schema.loaders.hpp>
 
@@ -17,7 +10,7 @@
 namespace {
 
 
-    constexpr f5::u8view base_url =
+    constexpr felspar::u8view base_url =
             "https://raw.githubusercontent.com/json-schema-org/"
             "JSON-Schema-Test-Suite/e64ebf90a001f4e0e18984d2086ea15765cfead2/"
             "tests/draft7/";
@@ -70,11 +63,12 @@ FSL_MAIN("json-schema-testsuite", "JSON Schema Test Suite Runner")
             const auto tests = fostlib::json::parse(response->body()->data());
             for (const auto test : tests) {
                 const auto description =
-                        fostlib::coerce<f5::u8view>(test["description"]);
+                        fostlib::coerce<felspar::u8view>(test["description"]);
                 const f5::json::schema s{loc, test["schema"]};
                 for (const auto example : test["tests"]) {
                     ss << description << ':'
-                       << fostlib::coerce<f5::u8view>(example["description"])
+                       << fostlib::coerce<felspar::u8view>(
+                                  example["description"])
                        << ':';
                     auto result = s.validate(example["data"]);
                     const bool valid{result};
@@ -97,7 +91,8 @@ FSL_MAIN("json-schema-testsuite", "JSON Schema Test Suite Runner")
             out << buffer.str();
         } else if (not failed && c_output.value()) {
             fostlib::utf::save_file(
-                    fostlib::coerce<fostlib::fs::path>(c_output.value().value()),
+                    fostlib::coerce<std::filesystem::path>(
+                            c_output.value().value()),
                     "");
         }
 
