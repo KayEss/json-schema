@@ -98,18 +98,17 @@ const f5::json::assertion::checker f5::json::assertion::if_checker =
         };
 
 
-const f5::json::assertion::checker f5::json::assertion::not_checker = [](felspar::u8view
-                                                                                 rule,
-                                                                         f5::json::value
-                                                                                 part,
-                                                                         f5::json::validation::annotations
-                                                                                 an) {
-    if (validation::first_error(an, an.spos / rule, an.dpos)) {
-        return validation::result{rule, an.spos / rule, std::move(an.dpos)};
-    } else {
-        return validation::result{std::move(an)};
-    }
-};
+const f5::json::assertion::checker f5::json::assertion::not_checker =
+        [](felspar::u8view rule,
+           f5::json::value part,
+           f5::json::validation::annotations an) {
+            if (validation::first_error(an, an.spos / rule, an.dpos)) {
+                return validation::result{
+                        rule, an.spos / rule, std::move(an.dpos)};
+            } else {
+                return validation::result{std::move(an)};
+            }
+        };
 
 
 const f5::json::assertion::checker f5::json::assertion::one_of_checker =
