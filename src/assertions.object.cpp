@@ -218,9 +218,10 @@ const f5::json::assertion::checker f5::json::assertion::property_names_checker =
             if (not properties.isobject())
                 return validation::result{std::move(an)};
             for (const auto property : properties.object()) {
-                auto valid = validation::first_error(validation::annotations{
-                        an, *an.base, an.spos / rule, value(property.first),
-                        pointer{}});
+                auto valid = validation::first_error(
+                        validation::annotations{
+                                an, *an.base, an.spos / rule,
+                                value(property.first), pointer{}});
                 if (not valid)
                     return validation::result{rule, an.spos / rule, an.dpos};
                 an.merge(std::move(valid));

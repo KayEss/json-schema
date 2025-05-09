@@ -23,8 +23,9 @@ namespace {
             true);
 
     auto load_json(fostlib::string fn) {
-        return f5::json::value::parse(fostlib::utf::load_file(
-                fostlib::coerce<std::filesystem::path>(fn)));
+        return f5::json::value::parse(
+                fostlib::utf::load_file(
+                        fostlib::coerce<std::filesystem::path>(fn)));
     }
 
     void

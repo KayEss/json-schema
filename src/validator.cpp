@@ -104,19 +104,25 @@ auto f5::json::validation::first_error(annotations an) -> result {
                         frag == ref.end()) {
                         const fostlib::url u{an.spos_url(), ref};
                         const auto &ref_schema = cache[u.as_string()];
-                        auto valid = first_error(annotations{
-                                an, ref_schema, pointer{}, an.data, an.dpos});
+                        auto valid = first_error(
+                                annotations{
+                                        an, ref_schema, pointer{}, an.data,
+                                        an.dpos});
                         if (not valid) return valid;
                         return annotations{std::move(an), std::move(valid)};
                     } else {
                         const felspar::u8view us{ref.begin(), frag};
                         const fostlib::url u{an.spos_url(), us};
                         const auto &ref_schema = cache[u.as_string()];
-                        auto valid = first_error(annotations{
-                                an, ref_schema,
-                                fostlib::jcursor::parse_json_pointer_fragment(
-                                        felspar::u8view{frag, ref.end()}),
-                                an.data, an.dpos});
+                        auto valid = first_error(
+                                annotations{
+                                        an, ref_schema,
+                                        fostlib::jcursor::
+                                                parse_json_pointer_fragment(
+                                                        felspar::u8view{
+                                                                frag,
+                                                                ref.end()}),
+                                        an.data, an.dpos});
                         if (not valid) return valid;
                         return annotations(std::move(an), std::move(valid));
                     }
