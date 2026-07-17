@@ -55,8 +55,8 @@ if(TARGET check)
         )
 
 
-    ## Check all of the schemas against the JSON schema itself. Any failure
-    ## here should be able to act as a "todo" list against the validator.
+    # Check all of the schemas against the JSON schema itself. Any failure
+    # here should be able to act as a "todo" list against the validator.
     add_custom_command(OUTPUT test-z-json-schema
             COMMAND json-schema-validator -b false
                 --schema ${CMAKE_CURRENT_SOURCE_DIR}/json-schema.schema.json

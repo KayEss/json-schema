@@ -6,9 +6,9 @@ if(TARGET stress)
     add_dependencies(stress json-schema-testsuite-v7-runner)
     set(json-schema-testsuite-v7-parts)
 
-    ## The use of a macro rather than a function gets around all sorts of
-    ## weird cmake stuff to do with the scoping rules of appending to the
-    ## `json-schema-testsuite-v7-parts` list.
+    # The use of a macro rather than a function gets around all sorts of
+    # weird cmake stuff to do with the scoping rules of appending to the
+    # `json-schema-testsuite-v7-parts` list.
     macro(draftv7 name)
         add_custom_command(OUTPUT json-schema-testsuite-v7-${name}
                 COMMAND json-schema-testsuite-v7-runner -b false
